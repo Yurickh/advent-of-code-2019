@@ -984,11 +984,6 @@ please-upgrade-node@^3.1.1, please-upgrade-node@^3.2.0:
   dependencies:
     semver-compare "^1.0.0"
 
-"prettier@npm:@btmills/prettier":
-  version "1.18.2"
-  resolved "https://registry.yarnpkg.com/@btmills/prettier/-/prettier-1.18.2.tgz#427f44e6d966b34e501917315f11bb393ac402ca"
-  integrity sha512-WLcqS8p0+o6CgNZSM88wXBUi6qVBaoGyxEuVQZ0cRq4FJDbqyFkM+lgM4m2l1aS5i9UEQtCwROboa1gYzYOlTA==
-
 pump@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/pump/-/pump-3.0.0.tgz#b4a2116815bde2f4e1ea602354e8c75565107a64"
