@@ -37,3 +37,17 @@ let runProgramWithInput = (override, input) => {
   ])
   |> runProgram;
 };
+
+let findValueWithOutput = (input, expected) => {
+  let found = ref(((-1), (-1)));
+
+  for (noun in 0 to 99) {
+    for (verb in 0 to 99) {
+      if (runProgramWithInput([|noun, verb|], input)[0] === expected) {
+        found := (noun, verb);
+      };
+    };
+  };
+
+  found^;
+};

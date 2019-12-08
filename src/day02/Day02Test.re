@@ -36,5 +36,12 @@ describe("Day 2: 1202 Program Alarm", () => {
       expect(Day02.runProgramWithInput([|12, 2|], Day02DataSet.input)[0])
       |> toBe(5866663)
     });
-  })
+  });
+
+  describe("Part Two", () => {
+    test("solves the problem", () => {
+      expect(Day02.findValueWithOutput(Day02DataSet.input, 19690720))
+      |> toEqual((42, 59))
+    })
+  });
 });
