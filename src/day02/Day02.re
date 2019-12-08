@@ -28,3 +28,12 @@ let runProgram = input => {
 
   input;
 };
+
+let runProgramWithInput = (override, input) => {
+  Array.concat([
+    [|input[0]|],
+    override,
+    Js.Array.slice(~start=Array.length(override) + 1, ~end_=-1, input),
+  ])
+  |> runProgram;
+};

@@ -33,7 +33,8 @@ describe("Day 2: 1202 Program Alarm", () => {
     });
 
     test("solves the problem", () => {
-      expect(Day02.runProgram(Day02DataSet.input)[0]) |> toBe(5866663)
+      expect(Day02.runProgramWithInput([|12, 2|], Day02DataSet.input)[0])
+      |> toBe(5866663)
     });
   })
 });
