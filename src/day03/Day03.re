@@ -11,45 +11,69 @@ type instruction =
 
 let origin = {x: 0, y: 0};
 
-let rec executeInstruction = (origin, instruction) =>
-  switch (instruction) {
-  | U(0)
-  | D(0)
-  | L(0)
-  | R(0) => [origin]
-  | U(amount) => [
-      origin,
-      ...executeInstruction({x: origin.x, y: origin.y + 1}, U(amount - 1)),
-    ]
-  | D(amount) => [
-      origin,
-      ...executeInstruction({x: origin.x, y: origin.y - 1}, D(amount - 1)),
-    ]
-  | L(amount) => [
-      origin,
-      ...executeInstruction({x: origin.x - 1, y: origin.y}, L(amount - 1)),
-    ]
-  | R(amount) => [
-      origin,
-      ...executeInstruction({x: origin.x + 1, y: origin.y}, R(amount - 1)),
-    ]
+let executeInstruction = {
+  let rec executeInstructionHelper = (list, reference, instruction) => {
+    switch (instruction) {
+    | U(0)
+    | D(0)
+    | L(0)
+    | R(0) => [reference, ...list]
+    | U(amount) =>
+      executeInstructionHelper(
+        [reference, ...list],
+        {x: reference.x, y: reference.y + 1},
+        U(amount - 1),
+      )
+    | D(amount) =>
+      executeInstructionHelper(
+        [reference, ...list],
+        {x: reference.x, y: reference.y - 1},
+        D(amount - 1),
+      )
+    | L(amount) =>
+      executeInstructionHelper(
+        [reference, ...list],
+        {x: reference.x - 1, y: reference.y},
+        L(amount - 1),
+      )
+    | R(amount) =>
+      executeInstructionHelper(
+        [reference, ...list],
+        {x: reference.x + 1, y: reference.y},
+        R(amount - 1),
+      )
+    };
   };
 
-let separateLast = list =>
-  switch (List.rev(list)) {
-  | [last, ...rest] => (last, List.rev(rest))
-  | [] => (origin, [])
+  executeInstructionHelper([]);
+};
+
+let rec spreadInFront = (butter, bread) => {
+  switch (butter) {
+  | [] => bread
+  | [head, ...tail] => spreadInFront(tail, [head, ...bread])
+  };
+};
+
+let drawPath = {
+  let rec drawPathHelper = (coordinates, reference, instructionSet) => {
+    switch (instructionSet) {
+    | [] => [reference, ...coordinates]
+    | [currentInstruction, ...rest] =>
+      switch (executeInstruction(reference, currentInstruction)) {
+      | [] => []
+      | [last, ...line] =>
+        drawPathHelper(
+          spreadInFront(List.rev(line), coordinates),
+          last,
+          rest,
+        )
+      }
+    };
   };
 
-let rec drawPath = (origin, instructionSet) =>
-  switch (instructionSet) {
-  | [] => [origin]
-  | [currentInstruction, ...rest] =>
-    let (last, line) =
-      executeInstruction(origin, currentInstruction) |> separateLast;
-
-    List.flatten([line, drawPath(last, rest)]);
-  };
+  drawPathHelper([], origin);
+};
 
 let splitInstruction = instructionAsString => {
   switch (Array.to_list(Js.String.split("", instructionAsString))) {
@@ -79,8 +103,8 @@ let intersections = listB =>
   List.filter(elA => List.exists(elB => elA == elB, listB));
 
 let shortestPath = ((inputA, inputB)) => {
-  let pathA = drawPath(origin, instructionSet_of_input(inputA));
-  let pathB = drawPath(origin, instructionSet_of_input(inputB));
+  let pathA = drawPath(instructionSet_of_input(inputA));
+  let pathB = drawPath(instructionSet_of_input(inputB));
 
   intersections(pathA, pathB)
   |> List.filter(element => element != origin)
