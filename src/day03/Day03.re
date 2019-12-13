@@ -131,3 +131,33 @@ let shortestPath = ((inputA, inputB)) => {
   |> Array.of_list
   |> Js.Math.minMany_int;
 };
+
+let indexOf = {
+  let rec indexOfHelper = (index, reference: coordinate, list) => {
+    switch (list) {
+    | [] => (-1)
+    | [head, ...tail] =>
+      if (reference == head) {
+        index;
+      } else {
+        indexOfHelper(index + 1, reference, tail);
+      }
+    };
+  };
+
+  indexOfHelper(0);
+};
+
+let countSteps = ((inputA, inputB)) => {
+  let pathA = drawPath(instructionSet_of_input(inputA));
+  let pathB = drawPath(instructionSet_of_input(inputB));
+
+  intersections(pathA, pathB)
+  |> List.filter(element => element != origin)
+  |> List.map(coordinate =>
+       indexOf(coordinate, List.rev(pathA))
+       + indexOf(coordinate, List.rev(pathB))
+     )
+  |> Array.of_list
+  |> Js.Math.minMany_int;
+};
