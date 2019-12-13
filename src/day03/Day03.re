@@ -3,6 +3,20 @@ type coordinate = {
   y: int,
 };
 
+module CoordinateSet = {
+  module CoordinateComparator =
+    Belt.Id.MakeComparable({
+      type t = coordinate;
+      let cmp = (c1, c2) => {
+        let compareX = compare(c1.x, c2.x);
+        compareX == 0 ? compare(c1.y, c2.y) : compareX;
+      };
+    });
+
+  let of_array = Belt.Set.fromArray(~id=(module CoordinateComparator));
+  let of_list = list => list |> Array.of_list |> of_array;
+};
+
 type instruction =
   | L(int)
   | R(int)
@@ -95,12 +109,17 @@ let instruction_of_string = str =>
   };
 
 let instructionSet_of_input = input =>
-  Array.to_list(
-    Array.map(instruction_of_string, Js.String.split(",", input)),
+  List.map(
+    instruction_of_string,
+    Array.to_list(Js.String.split(",", input)),
   );
 
-let intersections = listB =>
-  List.filter(elA => List.exists(elB => elA == elB, listB));
+let intersections = (listA, listB) => {
+  let itemsA = CoordinateSet.of_list(listA);
+  let itemsB = CoordinateSet.of_list(listB);
+
+  Belt.Set.intersect(itemsA, itemsB) |> Belt.Set.toArray |> Array.to_list;
+};
 
 let shortestPath = ((inputA, inputB)) => {
   let pathA = drawPath(instructionSet_of_input(inputA));

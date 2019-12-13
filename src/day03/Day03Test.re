@@ -29,6 +29,6 @@ describe("Day 3: Crossed Wires", () => {
   });
 
   test("solves the problem", () =>
-    expect(Day03.shortestPath(Day03DataSet.input)) |> toBe(0)
+    expect(Day03.shortestPath(Day03DataSet.input)) |> toBe(1626)
   );
 });
