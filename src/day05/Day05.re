@@ -3,6 +3,10 @@ type opcode =
   | Mul
   | Output
   | Input
+  | JumpIfTrue
+  | JumpIfFalse
+  | LessThan
+  | Equals
   | None;
 
 let opcode_of_int = int =>
@@ -11,6 +15,10 @@ let opcode_of_int = int =>
   | 2 => Mul
   | 3 => Input
   | 4 => Output
+  | 5 => JumpIfTrue
+  | 6 => JumpIfFalse
+  | 7 => LessThan
+  | 8 => Equals
   | _ => None
   };
 
@@ -48,10 +56,14 @@ module InstructionParameter = {
 
   let accessType_of_opcode = opcode =>
     switch (opcode) {
-    | Sum
+    | Sum => [Get, Get, Set]
     | Mul => [Get, Get, Set]
     | Input => [Set]
     | Output => [Get]
+    | JumpIfTrue => [Get, Get]
+    | JumpIfFalse => [Get, Get]
+    | LessThan => [Get, Get, Set]
+    | Equals => [Get, Get, Set]
     | None => []
     };
 
@@ -99,13 +111,6 @@ module InstructionParameter = {
   };
 };
 
-let nth_or = (defaultValue, list, index) =>
-  try(List.nth(list, index)) {
-  | Failure("nth") => defaultValue
-  };
-
-let a1 = (cb, a, _) => cb(a);
-
 let instruction_of_int = int => {
   let opcode = opcode_of_int(int mod 100);
   let parameterModeValues =
@@ -118,18 +123,46 @@ let instruction_of_int = int => {
 
 let runSum = (parameters, instructionSet) => {
   instructionSet[parameters[2]] = parameters[0] + parameters[1];
+  4;
 };
 
 let runMul = (parameters, instructionSet) => {
   instructionSet[parameters[2]] = parameters[0] * parameters[1];
+  4;
 };
 
 let runInput = (parameters, instructionSet, input) => {
   instructionSet[parameters[0]] = input;
+  2;
 };
 
 let runOutput = parameters => {
   Js.log(parameters[0]);
+  2;
+};
+
+let runJumpIfTrue = (parameters, address) =>
+  if (parameters[0] !== 0) {
+    parameters[1] - address;
+  } else {
+    3;
+  };
+
+let runJumpIfFalse = (parameters, address) =>
+  if (parameters[0] === 0) {
+    parameters[1] - address;
+  } else {
+    3;
+  };
+
+let runLessThan = (parameters, instructionSet) => {
+  instructionSet[parameters[2]] = parameters[0] < parameters[1] ? 1 : 0;
+  4;
+};
+
+let runEquals = (parameters, instructionSet) => {
+  instructionSet[parameters[2]] = parameters[0] === parameters[1] ? 1 : 0;
+  4;
 };
 
 let executeInstruction = (address, instructionSet, input) => {
@@ -149,10 +182,12 @@ let executeInstruction = (address, instructionSet, input) => {
   | Mul => runMul(parameters, instructionSet)
   | Input => runInput(parameters, instructionSet, input)
   | Output => runOutput(parameters)
-  | _ => ()
+  | JumpIfTrue => runJumpIfTrue(parameters, address)
+  | JumpIfFalse => runJumpIfFalse(parameters, address)
+  | LessThan => runLessThan(parameters, instructionSet)
+  | Equals => runEquals(parameters, instructionSet)
+  | _ => 1
   };
-
-  1 + List.length(parameterValues);
 };
 
 let runProgram = (instructionSet, input) => {
