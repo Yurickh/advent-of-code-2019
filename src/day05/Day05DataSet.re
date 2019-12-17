@@ -1,4 +1,4 @@
-let complexExample = [|
+let complexExample = [
   3,
   21,
   1008,
@@ -46,9 +46,9 @@ let complexExample = [|
   46,
   98,
   99,
-|];
+];
 
-let instructionSet = [|
+let instructionSet = [
   3,
   225,
   1,
@@ -727,4 +727,4 @@ let instructionSet = [|
   223,
   99,
   226,
-|];
+];

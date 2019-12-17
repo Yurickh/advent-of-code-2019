@@ -91,7 +91,7 @@ module InstructionParameter = {
     };
   };
 
-  let makePairList = (parameterModes, parameterValues) => {
+  let makePairList = (parameterModes, parameterValues) =>
     List.map2(
       (mode, param) => (mode, param),
       List.rev(
@@ -103,7 +103,6 @@ module InstructionParameter = {
       ),
       parameterValues,
     );
-  };
 
   let extract = (opcode, parameterWithModes, instructionSet) => {
     List.map2(
@@ -202,11 +201,13 @@ let executeInstruction = (address, instructionSet, input) => {
 
 let runProgram = (instructionSet, input) => {
   let current = ref(0);
+  let instructionSetArray = Array.of_list(instructionSet);
 
-  while (current^ < Array.length(instructionSet)
-         && instructionSet[current^] !== 99) {
-    current := current^ + executeInstruction(current^, instructionSet, input);
+  while (current^ < Array.length(instructionSetArray)
+         && instructionSetArray[current^] !== 99) {
+    current :=
+      current^ + executeInstruction(current^, instructionSetArray, input);
   };
 
-  instructionSet;
+  Array.to_list(instructionSetArray);
 };
