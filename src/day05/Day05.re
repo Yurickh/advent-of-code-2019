@@ -22,10 +22,20 @@ let opcode_of_int = int =>
   | _ => None
   };
 
-let rec padStart = (list, value, length) => {
-  switch (length - List.length(list)) {
-  | 0 => list
-  | _ => padStart([value, ...list], value, length)
+let padStart = (list, value, desiredLength) => {
+  let rec padStartHelper = (remaining, list) => {
+    switch (remaining) {
+    | [] => list
+    | [head, ...tail] => padStartHelper(tail, [head, ...list])
+    };
+  };
+
+  let paddingSize = desiredLength - List.length(list);
+
+  if (paddingSize <= 0) {
+    list;
+  } else {
+    padStartHelper(Array.to_list(Array.make(paddingSize, value)), list);
   };
 };
 
